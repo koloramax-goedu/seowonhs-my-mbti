@@ -23,7 +23,7 @@ st.markdown("""
         color: #4A3B32;
     }
     
-    /* 고정 상단 타이틀 상자 */
+    /* 상단 타이틀 상자 */
     .header-box {
         background: linear-gradient(135deg, #FFF5C0 0%, #FFE082 100%);
         padding: 1.8rem 1.5rem;
@@ -41,69 +41,63 @@ st.markdown("""
         margin-bottom: 0.3rem;
     }
 
-    /* 몬스터볼 영역 (가운데 정렬, 일정한 간격) */
+    /* 고해상도 몬스터볼 영역 (텍스트 라벨 제거, 크기 확대) */
     .pokeball-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 40px;
-        margin: 1rem 0 2rem 0;
-    }
-
-    .pokeball-item {
-        text-align: center;
+        gap: 45px;
+        margin: 1.2rem 0 2rem 0;
     }
 
     .pokeball-item img {
-        width: 48px;
-        height: 48px;
-        filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.15));
-        transition: transform 0.2s ease-in-out;
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+        filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.15));
+        transition: transform 0.25s ease-in-out;
     }
 
     .pokeball-item img:hover {
-        transform: scale(1.15) rotate(10deg);
+        transform: scale(1.18) rotate(12deg);
     }
 
-    .pokeball-label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #78350F;
-        margin-top: 4px;
-    }
-
-    /* 화면 1: MBTI 4x4 그리드 전용 안내문 및 버튼 스타일 */
+    /* MBTI 선택 안내문 */
     .mbti-section-title {
         text-align: center;
-        font-size: 1.3rem;
+        font-size: 1.35rem;
         font-weight: 800;
         color: #92400E;
         margin-bottom: 1.5rem;
     }
 
-    /* 4x4 grid Streamlit 버튼 커스텀 */
+    /* 4x4 정사각형 MBTI 버튼 (세로 길이 1.5배 및 정사각형 비율) */
     div[data-testid="stHorizontalBlock"] .stButton > button {
-        width: 100%;
-        height: 80px;
+        width: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        min-height: 120px !important;
         background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%);
         color: #78350F;
-        font-size: 1.4rem;
-        font-weight: 800;
-        border-radius: 18px;
+        font-size: 1.5rem;
+        font-weight: 900;
+        border-radius: 22px;
         border: 2px solid #FDE68A;
         box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
         transition: all 0.2s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     div[data-testid="stHorizontalBlock"] .stButton > button:hover {
         background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
         color: #FFFFFF;
         border-color: #D97706;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 18px rgba(217, 119, 6, 0.25);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25);
     }
 
-    /* 화면 2: 포켓몬 결과 카드 스타일 */
+    /* 포켓몬 결과 카드 스타일 */
     .pokemon-card {
         background-color: #FFFFFF;
         border: 3px solid #FCD34D;
@@ -128,17 +122,17 @@ st.markdown("""
     }
 
     .pokemon-name {
-        font-size: 2.4rem;
+        font-size: 2.5rem;
         font-weight: 900;
         color: #451A03;
         margin-bottom: 0.8rem;
     }
 
-    /* 노말 타입 색상(배경 #A8A29E, 글자 #FFFFFF)으로 통일한 특징 배지 */
+    /* 노말 타입 색상(#A8A29E)의 공식 특징 배지 */
     .category-badge {
         display: inline-block;
         padding: 0.45rem 1.2rem;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         font-weight: 700;
         border-radius: 20px;
         background-color: #A8A29E;
@@ -178,28 +172,31 @@ st.markdown("""
         color: #451A03;
     }
 
-    /* 돌아가기 버튼 스타일 */
+    /* 돌아가기 버튼 전용 스타일 (끝부분이 완전히 둥근 형태, 화살표 제거, 글자 크기 확대) */
     .back-button-container .stButton > button {
-        width: 100%;
+        width: 100% !important;
+        aspect-ratio: auto !important;
+        min-height: 60px !important;
         background: linear-gradient(135deg, #78350F 0%, #451A03 100%);
-        color: #FFFFFF;
-        font-size: 1.25rem;
-        font-weight: 800;
-        padding: 0.8rem;
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 6px 18px rgba(69, 26, 3, 0.25);
-        transition: all 0.2s ease-in-out;
+        color: #FFFFFF !important;
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        padding: 0.9rem 1.5rem !important;
+        border-radius: 50px !important;
+        border: none !important;
+        box-shadow: 0 6px 18px rgba(69, 26, 3, 0.25) !important;
+        transition: all 0.2s ease-in-out !important;
     }
 
     .back-button-container .stButton > button:hover {
-        background: linear-gradient(135deg, #92400E 0%, #78350F 100%);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #92400E 0%, #78350F 100%) !important;
+        transform: translateY(-2px) !important;
+        color: #FFFFFF !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 4. 16가지 MBTI별 포켓몬 데이터베이스 (공식 특징 분류 포함)
+# 4. 16가지 MBTI별 포켓몬 데이터베이스
 MBTI_POKEMON = {
     "ISTJ": {
         "name": "거북왕",
@@ -386,20 +383,17 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 6. [상단 고정] 몬스터볼, 수퍼볼, 하이퍼볼 공식 이미지 (가운데 정렬 및 일정한 간격)
+# 6. [상단 고정] 고해상도 몬스터볼, 수퍼볼, 하이퍼볼 이미지 (텍스트 라벨 제거)
 st.markdown("""
 <div class="pokeball-container">
     <div class="pokeball-item">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="몬스터볼">
-        <div class="pokeball-label">몬스터볼</div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/512px-Pok%C3%A9_Ball_icon.svg.png" alt="몬스터볼">
     </div>
     <div class="pokeball-item">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="수퍼볼">
-        <div class="pokeball-label">수퍼볼</div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Great_Ball_icon.svg/512px-Great_Ball_icon.svg.png" alt="수퍼볼">
     </div>
     <div class="pokeball-item">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" alt="하이퍼볼">
-        <div class="pokeball-label">하이퍼볼</div>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Ultra_Ball_icon.svg/512px-Ultra_Ball_icon.svg.png" alt="하이퍼볼">
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -410,11 +404,10 @@ st.markdown("""
 
 if st.session_state.selected_mbti is None:
     # -------------------------------------------------------------------------
-    # [화면 1] MBTI 선택 화면 (4x4 그리드, 포켓몬 정보 미포함)
+    # [화면 1] MBTI 선택 화면 (정사각형 4x4 그리드, 순수 MBTI 유형만 표시)
     # -------------------------------------------------------------------------
     st.markdown('<div class="mbti-section-title">👉 당신의 MBTI 유형을 클릭해 주세요!</div>', unsafe_allow_html=True)
 
-    # 4x4 그리드 구성 (순수 MBTI 유형 이름만 표시)
     mbti_grid = [
         ["ISTJ", "ISFJ", "INFJ", "INTJ"],
         ["ISTP", "ISFP", "INFP", "INTP"],
@@ -432,16 +425,16 @@ if st.session_state.selected_mbti is None:
 
 else:
     # -------------------------------------------------------------------------
-    # [화면 2] 포켓몬 결과 화면 (축하 효과 + 결과 카드 + 돌아가기 버튼)
+    # [화면 2] 포켓몬 결과 화면
     # -------------------------------------------------------------------------
     current_mbti = st.session_state.selected_mbti
     poke_info = MBTI_POKEMON[current_mbti]
     poke_id = poke_info["id"]
     
-    # 공식 고화질 대표 이미지 URL
-    img_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/master/sprites/pokemon/other/official-artwork/{poke_id}.png"
+    # 올바른 공식 고화질 대표 이미지 URL (경로 오류 수정)
+    img_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{poke_id}.png"
 
-    # 축하 효과 (풍선 효과 + 커스텀 JS 파티클 효과)
+    # 폭죽 및 파티클 연출
     st.balloons()
     
     js_confetti = """
@@ -488,7 +481,7 @@ else:
     # 어울리는 이유 리스트 HTML
     reasons_html = "".join([f"<li>{r}</li>" for r in poke_info["reasons"]])
 
-    # 포켓몬 상세 결과 카드 (영어 이름 제거 및 공식 특징 표현 태그 반영)
+    # 결과 카드 출력
     st.markdown(f"""
     <div class="pokemon-card">
         <div class="mbti-badge">{current_mbti}의 단짝 포켓몬</div>
@@ -512,9 +505,9 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 하단 '돌아가기' 버튼 영역
+    # 둥근 형태의 '돌아가기' 버튼
     st.markdown('<div class="back-button-container">', unsafe_allow_html=True)
-    if st.button("⬅️ 다른 MBTI 선택하기 (돌아가기)"):
+    if st.button("돌아가기"):
         st.session_state.selected_mbti = None
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
