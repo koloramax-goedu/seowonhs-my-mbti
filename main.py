@@ -1,49 +1,109 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. 페이지 기본 설정 (제목, 아이콘, 레이아웃)
+# 1. 페이지 기본 설정
 st.set_page_config(
-    page_title="나만의 MBTI 단짝 포켓몬 찾기",
+    page_title="MBTI 단짝 포켓몬 찾기",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# 2. 따뜻한 크림/노랑 톤 Custom CSS 스타일링
+# 2. 세션 상태 초기화 (화면 전환 관리)
+if "selected_mbti" not in st.session_state:
+    st.session_state.selected_mbti = None
+
+# 3. 따뜻한 크림·노랑 톤 및 커스텀 디자인 CSS
 st.markdown("""
 <style>
-    /* 전체 배경 및 폰트 설정 */
+    /* 전체 배경 및 폰트 */
     .stApp {
         background-color: #FFFDF0;
         font-family: 'Pretendard', 'Noto Sans KR', -apple-system, sans-serif;
         color: #4A3B32;
     }
     
-    /* 상단 타이틀 상자 */
+    /* 고정 상단 타이틀 상자 */
     .header-box {
         background: linear-gradient(135deg, #FFF5C0 0%, #FFE082 100%);
-        padding: 2rem 1.5rem;
+        padding: 1.8rem 1.5rem;
         border-radius: 24px;
         text-align: center;
         box-shadow: 0 8px 20px rgba(245, 158, 11, 0.12);
-        margin-bottom: 2rem;
+        margin-bottom: 1.2rem;
         border: 2px solid #FCD34D;
     }
     
     .header-title {
         font-size: 2.2rem;
-        font-weight: 800;
+        font-weight: 900;
         color: #78350F;
-        margin-bottom: 0.4rem;
-    }
-    
-    .header-subtitle {
-        font-size: 1.15rem;
-        color: #92400E;
-        font-weight: 600;
+        margin-bottom: 0.3rem;
     }
 
-    /* 포켓몬 결과 카드 스타일 */
+    /* 몬스터볼 영역 (가운데 정렬, 일정한 간격) */
+    .pokeball-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        margin: 1rem 0 2rem 0;
+    }
+
+    .pokeball-item {
+        text-align: center;
+    }
+
+    .pokeball-item img {
+        width: 48px;
+        height: 48px;
+        filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.15));
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .pokeball-item img:hover {
+        transform: scale(1.15) rotate(10deg);
+    }
+
+    .pokeball-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #78350F;
+        margin-top: 4px;
+    }
+
+    /* 화면 1: MBTI 4x4 그리드 전용 안내문 및 버튼 스타일 */
+    .mbti-section-title {
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: #92400E;
+        margin-bottom: 1.5rem;
+    }
+
+    /* 4x4 grid Streamlit 버튼 커스텀 */
+    div[data-testid="stHorizontalBlock"] .stButton > button {
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(135deg, #FFFFFF 0%, #FFFBEB 100%);
+        color: #78350F;
+        font-size: 1.4rem;
+        font-weight: 800;
+        border-radius: 18px;
+        border: 2px solid #FDE68A;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.08);
+        transition: all 0.2s ease-in-out;
+    }
+
+    div[data-testid="stHorizontalBlock"] .stButton > button:hover {
+        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+        color: #FFFFFF;
+        border-color: #D97706;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(217, 119, 6, 0.25);
+    }
+
+    /* 화면 2: 포켓몬 결과 카드 스타일 */
     .pokemon-card {
         background-color: #FFFFFF;
         border: 3px solid #FCD34D;
@@ -51,10 +111,10 @@ st.markdown("""
         padding: 2rem 1.5rem;
         text-align: center;
         box-shadow: 0 12px 30px rgba(217, 119, 6, 0.15);
-        margin-top: 1.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 1.5rem;
     }
 
-    /* MBTI 배지 */
     .mbti-badge {
         display: inline-block;
         background-color: #FEF3C7;
@@ -64,37 +124,29 @@ st.markdown("""
         padding: 0.4rem 1.3rem;
         border-radius: 50px;
         border: 2px solid #FBBF24;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8rem;
     }
 
-    /* 포켓몬 이름 */
     .pokemon-name {
-        font-size: 2.3rem;
+        font-size: 2.4rem;
         font-weight: 900;
         color: #451A03;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.8rem;
     }
 
-    .pokemon-english {
-        font-size: 1.2rem;
-        color: #D97706;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    /* 타입 태그 */
-    .type-badge {
+    /* 노말 타입 색상(배경 #A8A29E, 글자 #FFFFFF)으로 통일한 특징 배지 */
+    .category-badge {
         display: inline-block;
-        padding: 0.4rem 1rem;
+        padding: 0.45rem 1.2rem;
         font-size: 1.05rem;
         font-weight: 700;
         border-radius: 20px;
-        color: white;
-        margin: 0.2rem;
+        background-color: #A8A29E;
+        color: #FFFFFF;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
     }
 
-    /* 특징 및 어울리는 이유 박스 */
     .info-section {
         background-color: #FFFBEB;
         border-radius: 20px;
@@ -105,15 +157,15 @@ st.markdown("""
     }
 
     .info-title {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
         font-weight: 800;
         color: #78350F;
         margin-bottom: 0.5rem;
     }
 
     .info-text {
-        font-size: 1.15rem;
-        line-height: 1.75;
+        font-size: 1.1rem;
+        line-height: 1.7;
         color: #451A03;
         font-weight: 500;
     }
@@ -126,64 +178,33 @@ st.markdown("""
         color: #451A03;
     }
 
-    /* 선택 상자 및 버튼 스타일 */
-    div[data-baseweb="select"] > div {
-        background-color: #FFFBEB !important;
-        border-color: #FBBF24 !important;
-        border-radius: 16px !important;
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-        color: #78350F !important;
-    }
-
-    .stButton > button {
+    /* 돌아가기 버튼 스타일 */
+    .back-button-container .stButton > button {
         width: 100%;
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-        color: white;
-        font-size: 1.35rem;
+        background: linear-gradient(135deg, #78350F 0%, #451A03 100%);
+        color: #FFFFFF;
+        font-size: 1.25rem;
         font-weight: 800;
-        padding: 0.8rem 1.5rem;
+        padding: 0.8rem;
         border-radius: 20px;
         border: none;
-        box-shadow: 0 6px 18px rgba(217, 119, 6, 0.3);
+        box-shadow: 0 6px 18px rgba(69, 26, 3, 0.25);
         transition: all 0.2s ease-in-out;
     }
 
-    .stButton > button:hover {
+    .back-button-container .stButton > button:hover {
+        background: linear-gradient(135deg, #92400E 0%, #78350F 100%);
         transform: translateY(-2px);
-        box-shadow: 0 10px 22px rgba(217, 119, 6, 0.4);
-        background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-        color: white;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. 타입별 배지 색상 테이블
-TYPE_COLORS = {
-    "불꽃": "#EF4444",
-    "물": "#3B82F6",
-    "풀": "#10B981",
-    "전기": "#F59E0B",
-    "에스퍼": "#EC4899",
-    "격투": "#D97706",
-    "강철": "#6B7280",
-    "노말": "#A8A29E",
-    "페어리": "#F472B6",
-    "고스트": "#8B5CF6",
-    "독": "#A855F7",
-    "비행": "#60A5FA",
-    "드래곤": "#6366F1",
-    "바위": "#78350F",
-    "악": "#475569"
-}
-
-# 4. 16가지 MBTI별 포켓몬 데이터베이스
+# 4. 16가지 MBTI별 포켓몬 데이터베이스 (공식 특징 분류 포함)
 MBTI_POKEMON = {
     "ISTJ": {
         "name": "거북왕",
-        "english_name": "Blastoise",
         "id": 9,
-        "types": ["물"],
+        "category": "껍질포켓몬",
         "features": "묵묵하고 단단하며 신뢰를 최우선으로 생각하는 보디가드",
         "reasons": [
             "원칙을 지키며 책임감이 강한 ISTJ의 신뢰감을 꼭 닮아 있습니다.",
@@ -193,9 +214,8 @@ MBTI_POKEMON = {
     },
     "ISFJ": {
         "name": "해피너스",
-        "english_name": "Blissey",
         "id": 242,
-        "types": ["노말"],
+        "category": "행복포켓몬",
         "features": "타인의 행복과 건강을 세심하게 보살피는 헌신적인 포켓몬",
         "reasons": [
             "주변 사람들을 온화하고 세심하게 챙기는 ISFJ의 다정함과 꼭 맞닿아 있습니다.",
@@ -205,9 +225,8 @@ MBTI_POKEMON = {
     },
     "INFJ": {
         "name": "뮤",
-        "english_name": "Mew",
         "id": 151,
-        "types": ["에스퍼"],
+        "category": "신종포켓몬",
         "features": "깊은 통찰력과 신비로운 이상을 품고 있는 포켓몬",
         "reasons": [
             "내면의 깊은 가치와 통찰력을 중시하는 INFJ와 영혼의 결이 어울립니다.",
@@ -217,9 +236,8 @@ MBTI_POKEMON = {
     },
     "INTJ": {
         "name": "후딘",
-        "english_name": "Alakazam",
         "id": 65,
-        "types": ["에스퍼"],
+        "category": "초능력포켓몬",
         "features": "비범한 지능과 전략적 사고를 바탕으로 해결책을 찾는 지성파",
         "reasons": [
             "복잡한 문제를 명확하게 분석하고 철저히 계획하는 INTJ의 모범적인 파트너입니다.",
@@ -229,9 +247,8 @@ MBTI_POKEMON = {
     },
     "ISTP": {
         "name": "루카리오",
-        "english_name": "Lucario",
         "id": 448,
-        "types": ["격투", "강철"],
+        "category": "파동포켓몬",
         "features": "침착한 관찰력과 정교한 기민함을 겸비한 과묵한 해결사",
         "reasons": [
             "상황을 냉철하게 파악하고 깔끔하게 임무를 완수하는 ISTP와 스타일이 맞아떨어집니다.",
@@ -241,21 +258,19 @@ MBTI_POKEMON = {
     },
     "ISFP": {
         "name": "피카츄",
-        "english_name": "Pikachu",
         "id": 25,
-        "types": ["전기"],
+        "category": "쥐포켓몬",
         "features": "자유롭고 감성적이며 주변에 기분 좋은 순수함을 전하는 파트너",
         "reasons": [
-            "자신만의 감성을大切히 여기는 ISFP에게 솔직하고 매력적인 온기를 더해줍니다.",
+            "자신만의 감성을 중요하게 여기는 ISFP에게 솔직하고 매력적인 온기를 더해줍니다.",
             "강요 없이 자연스러운 일상 속 행복과 자유로움을 선사합니다.",
             "함께 있는 것만으로도 잔잔한 상쾌함과 소소한 기쁨이 피어납니다."
         ]
     },
     "INFP": {
         "name": "님피아",
-        "english_name": "Sylveon",
         "id": 700,
-        "types": ["페어리"],
+        "category": "연결포켓몬",
         "features": "상대방의 마음을 어루만지고 따뜻한 유대감을 나누는 낭만 포켓몬",
         "reasons": [
             "풍부한 감수성과 따뜻한 마음을 가진 INFP의 정서를 누구보다 잘 감싸줍니다.",
@@ -265,9 +280,8 @@ MBTI_POKEMON = {
     },
     "INTP": {
         "name": "팬텀",
-        "english_name": "Gengar",
         "id": 94,
-        "types": ["고스트", "독"],
+        "category": "그림자포켓몬",
         "features": "엉뚱하고 기발하며 독창적인 관점으로 세상을 탐구하는 호기심 대장",
         "reasons": [
             "고정관념을 벗어나 늘 새로운 아이디어를 탐구하는 INTP에게 시원한 영감을 줍니다.",
@@ -277,9 +291,8 @@ MBTI_POKEMON = {
     },
     "ESTP": {
         "name": "리자몽",
-        "english_name": "Charizard",
         "id": 6,
-        "types": ["불꽃", "비행"],
+        "category": "화염포켓몬",
         "features": "망설임 없는 도전 정신과 화끈한 에너지를 자랑하는 행동파",
         "reasons": [
             "스릴 넘치는 모험과 거침없는 현장 실행력을 지닌 ESTP의 열정을 닮았습니다.",
@@ -289,9 +302,8 @@ MBTI_POKEMON = {
     },
     "ESFP": {
         "name": "푸린",
-        "english_name": "Jigglypuff",
         "id": 39,
-        "types": ["노말", "페어리"],
+        "category": "풍선포켓몬",
         "features": "무대 위의 스타처럼 밝은 에너지를 전파하는 매력 만점 무드메이커",
         "reasons": [
             "흥이 넘치고 사람들에게 웃음을 건네는 ESFP의 밝은 분위기와 천생연분입니다.",
@@ -301,9 +313,8 @@ MBTI_POKEMON = {
     },
     "ENFP": {
         "name": "토게피",
-        "english_name": "Togepi",
         "id": 175,
-        "types": ["페어리"],
+        "category": "바늘알포켓몬",
         "features": "긍정 에너지와 행운을 유발하는 무한한 상상력의 소유자",
         "reasons": [
             "세상을 호기심 가득하고 긍정적으로 바라보는 ENFP의 순수한 열정과 통합니다.",
@@ -313,9 +324,8 @@ MBTI_POKEMON = {
     },
     "ENTP": {
         "name": "로토무",
-        "english_name": "Rotom",
         "id": 479,
-        "types": ["전기", "고스트"],
+        "category": "플라즈마포켓몬",
         "features": "끊임없이 변화하며 새로운 형태를 시도하는 창의력 브레인",
         "reasons": [
             "다방면에 관심이 많고 틀에 갇히길 거부하는 ENTP에게 완벽한 자극을 줍니다.",
@@ -325,9 +335,8 @@ MBTI_POKEMON = {
     },
     "ESTJ": {
         "name": "윈디",
-        "english_name": "Arcanine",
         "id": 59,
-        "types": ["불꽃"],
+        "category": "전설포켓몬",
         "features": "위풍당당한 용맹함과 확고한 책임감을 갖춘 대장 포켓몬",
         "reasons": [
             "질서와 체계를 지키며 단체를 이끄는 ESTJ의 당당한 리더십에 꼭 맞습니다.",
@@ -337,9 +346,8 @@ MBTI_POKEMON = {
     },
     "ESFJ": {
         "name": "다부니",
-        "english_name": "Audino",
         "id": 531,
-        "types": ["노말"],
+        "category": "히어링포켓몬",
         "features": "상대방의 마음을 먼저 헤아리고 화합을 이루어내는 친절 왕",
         "reasons": [
             "사람들을 따뜻하게 챙기고 친화력이 높은 ESFJ의 다정함을 배로 만들어줍니다.",
@@ -349,9 +357,8 @@ MBTI_POKEMON = {
     },
     "ENFJ": {
         "name": "망나뇽",
-        "english_name": "Dragonite",
         "id": 149,
-        "types": ["드래곤", "비행"],
+        "category": "드래곤포켓몬",
         "features": "크고 포근한 마음으로 타인을 이끌고 돕는 든든한 멘토",
         "reasons": [
             "주변 사람들의 가능성을 꽃피우고 진심으로 돕는 ENFJ의 헌신과 닮아 있습니다.",
@@ -361,9 +368,8 @@ MBTI_POKEMON = {
     },
     "ENTJ": {
         "name": "마기라스",
-        "english_name": "Tyranitar",
         "id": 248,
-        "types": ["바위", "악"],
+        "category": "갑옷포켓몬",
         "features": "압도적인 포스와 당당한 추진력으로 정상을 목표로 하는 비전가",
         "reasons": [
             "높은 비전을 설정하고 원대하게 목표를 이뤄내는 ENTJ의 결단력과 어울립니다.",
@@ -373,28 +379,71 @@ MBTI_POKEMON = {
     }
 }
 
-# 5. 메인 레이아웃 구성
+# 5. [상단 고정] 페이지 제목
 st.markdown("""
 <div class="header-box">
     <div class="header-title">⚡ MBTI 단짝 포켓몬 찾기 ⚡</div>
-    <div class="header-subtitle">나의 성격 유형과 가장 완벽하게 어울리는 포켓몬 친구를 만나보세요!</div>
 </div>
 """, unsafe_allow_html=True)
 
-# 6. MBTI 선택 섹션
-mbti_list = list(MBTI_POKEMON.keys())
-selected_mbti = st.selectbox(
-    "👉 당신의 MBTI 유형을 선택해 주세요:",
-    mbti_list,
-    index=0
-)
+# 6. [상단 고정] 몬스터볼, 수퍼볼, 하이퍼볼 공식 이미지 (가운데 정렬 및 일정한 간격)
+st.markdown("""
+<div class="pokeball-container">
+    <div class="pokeball-item">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" alt="몬스터볼">
+        <div class="pokeball-label">몬스터볼</div>
+    </div>
+    <div class="pokeball-item">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" alt="수퍼볼">
+        <div class="pokeball-label">수퍼볼</div>
+    </div>
+    <div class="pokeball-item">
+        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" alt="하이퍼볼">
+        <div class="pokeball-label">하이퍼볼</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-# 7. 버튼 클릭 시 결과 표시
-if st.button("✨ 내 단짝 포켓몬 찾아보기 ✨"):
-    # 폭죽 효과 실행 (Streamlit 기본 축하 효과)
+# -----------------------------------------------------------------------------
+# 7. 화면 분리 로직 (MBTI 선택 화면 vs 단짝 포켓몬 결과 화면)
+# -----------------------------------------------------------------------------
+
+if st.session_state.selected_mbti is None:
+    # -------------------------------------------------------------------------
+    # [화면 1] MBTI 선택 화면 (4x4 그리드, 포켓몬 정보 미포함)
+    # -------------------------------------------------------------------------
+    st.markdown('<div class="mbti-section-title">👉 당신의 MBTI 유형을 클릭해 주세요!</div>', unsafe_allow_html=True)
+
+    # 4x4 그리드 구성 (순수 MBTI 유형 이름만 표시)
+    mbti_grid = [
+        ["ISTJ", "ISFJ", "INFJ", "INTJ"],
+        ["ISTP", "ISFP", "INFP", "INTP"],
+        ["ESTP", "ESFP", "ENFP", "ENTP"],
+        ["ESTJ", "ESFJ", "ENFJ", "ENTJ"]
+    ]
+
+    for row in mbti_grid:
+        cols = st.columns(4)
+        for i, mbti_code in enumerate(row):
+            with cols[i]:
+                if st.button(mbti_code, key=f"btn_{mbti_code}"):
+                    st.session_state.selected_mbti = mbti_code
+                    st.rerun()
+
+else:
+    # -------------------------------------------------------------------------
+    # [화면 2] 포켓몬 결과 화면 (축하 효과 + 결과 카드 + 돌아가기 버튼)
+    # -------------------------------------------------------------------------
+    current_mbti = st.session_state.selected_mbti
+    poke_info = MBTI_POKEMON[current_mbti]
+    poke_id = poke_info["id"]
+    
+    # 공식 고화질 대표 이미지 URL
+    img_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/master/sprites/pokemon/other/official-artwork/{poke_id}.png"
+
+    # 축하 효과 (풍선 효과 + 커스텀 JS 파티클 효과)
     st.balloons()
     
-    # HTML/JS 커스텀 파티클 연출 포함
     js_confetti = """
     <script>
     function createParticle(x, y) {
@@ -427,39 +476,28 @@ if st.button("✨ 내 단짝 포켓몬 찾아보기 ✨"):
 
         setTimeout(() => particle.remove(), 2000);
     }
-    for(let i=0; i<45; i++) {
+    for(let i=0; i<40; i++) {
         setTimeout(() => {
             createParticle(window.innerWidth / 2, window.innerHeight / 3);
-        }, i * 20);
+        }, i * 25);
     }
     </script>
     """
     components.html(js_confetti, height=0)
 
-    # 데이터 추출
-    poke_info = MBTI_POKEMON[selected_mbti]
-    poke_id = poke_info["id"]
-    # PokeAPI 공식 이미지 고화질 URL
-    img_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{poke_id}.png"
-
-    # 타입 배지 HTML 구성
-    type_badges_html = ""
-    for t in poke_info["types"]:
-        bg_col = TYPE_COLORS.get(t, "#F59E0B")
-        type_badges_html += f'<span class="type-badge" style="background-color:{bg_col};">{t}</span>'
-
-    # 이유 리스트 HTML 구성
+    # 어울리는 이유 리스트 HTML
     reasons_html = "".join([f"<li>{r}</li>" for r in poke_info["reasons"]])
 
-    # 결과 카드 출력
+    # 포켓몬 상세 결과 카드 (영어 이름 제거 및 공식 특징 표현 태그 반영)
     st.markdown(f"""
     <div class="pokemon-card">
-        <div class="mbti-badge">{selected_mbti}의 단짝</div>
+        <div class="mbti-badge">{current_mbti}의 단짝 포켓몬</div>
         <div class="pokemon-name">{poke_info['name']}</div>
-        <div class="pokemon-english">({poke_info['english_name']})</div>
-        <div>{type_badges_html}</div>
-        <div style="margin: 1.5rem 0;">
-            <img src="{img_url}" width="240" alt="{poke_info['name']}" style="filter: drop-shadow(0px 8px 12px rgba(0,0,0,0.12));">
+        <div>
+            <span class="category-badge">{poke_info['category']}</span>
+        </div>
+        <div style="margin: 1.2rem 0;">
+            <img src="{img_url}" width="250" alt="{poke_info['name']}" style="filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.12));">
         </div>
         <div class="info-section">
             <div class="info-title">🌟 단짝 포켓몬의 특징</div>
@@ -473,3 +511,10 @@ if st.button("✨ 내 단짝 포켓몬 찾아보기 ✨"):
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # 하단 '돌아가기' 버튼 영역
+    st.markdown('<div class="back-button-container">', unsafe_allow_html=True)
+    if st.button("⬅️ 다른 MBTI 선택하기 (돌아가기)"):
+        st.session_state.selected_mbti = None
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
