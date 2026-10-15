@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 
 # 1. 페이지 기본 설정
 st.set_page_config(
@@ -41,7 +40,7 @@ st.markdown("""
         margin-bottom: 0.3rem;
     }
 
-    /* 고해상도 몬스터볼 영역 (텍스트 라벨 제거, 크기 확대) */
+    /* 몬스터볼 영역 (SVG 벡터 사용으로 이미지 깨짐 완벽 방지, 라벨 없음) */
     .pokeball-container {
         display: flex;
         justify-content: center;
@@ -50,15 +49,14 @@ st.markdown("""
         margin: 1.2rem 0 2rem 0;
     }
 
-    .pokeball-item img {
+    .pokeball-item svg {
         width: 75px;
         height: 75px;
-        object-fit: contain;
-        filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.15));
+        filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.12));
         transition: transform 0.25s ease-in-out;
     }
 
-    .pokeball-item img:hover {
+    .pokeball-item svg:hover {
         transform: scale(1.18) rotate(12deg);
     }
 
@@ -71,7 +69,7 @@ st.markdown("""
         margin-bottom: 1.5rem;
     }
 
-    /* 4x4 정사각형 MBTI 버튼 (세로 길이 1.5배 및 정사각형 비율) */
+    /* 4x4 정사각형 MBTI 버튼 (세로 길이 1.5배 & 정사각형 비율) */
     div[data-testid="stHorizontalBlock"] .stButton > button {
         width: 100% !important;
         aspect-ratio: 1 / 1 !important;
@@ -128,7 +126,7 @@ st.markdown("""
         margin-bottom: 0.8rem;
     }
 
-    /* 노말 타입 색상(#A8A29E)의 공식 특징 배지 */
+    /* 노말 타입 배경색(#A8A29E)의 공식 특징 태그 */
     .category-badge {
         display: inline-block;
         padding: 0.45rem 1.2rem;
@@ -172,16 +170,16 @@ st.markdown("""
         color: #451A03;
     }
 
-    /* 돌아가기 버튼 전용 스타일 (끝부분이 완전히 둥근 형태, 화살표 제거, 글자 크기 확대) */
+    /* 돌아가기 버튼 (알약 모양, 대형 텍스트) */
     .back-button-container .stButton > button {
         width: 100% !important;
         aspect-ratio: auto !important;
-        min-height: 60px !important;
+        min-height: 62px !important;
         background: linear-gradient(135deg, #78350F 0%, #451A03 100%);
         color: #FFFFFF !important;
-        font-size: 1.6rem !important;
+        font-size: 1.55rem !important;
         font-weight: 800 !important;
-        padding: 0.9rem 1.5rem !important;
+        padding: 0.8rem 1.5rem !important;
         border-radius: 50px !important;
         border: none !important;
         box-shadow: 0 6px 18px rgba(69, 26, 3, 0.25) !important;
@@ -383,17 +381,45 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 6. [상단 고정] 고해상도 몬스터볼, 수퍼볼, 하이퍼볼 이미지 (텍스트 라벨 제거)
+# 6. [상단 고정] 몬스터볼, 수퍼볼, 하이퍼볼 (자체 고해상도 SVG 벡터 - 깨짐 현상 0%)
 st.markdown("""
 <div class="pokeball-container">
     <div class="pokeball-item">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/512px-Pok%C3%A9_Ball_icon.svg.png" alt="몬스터볼">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#EE1515" />
+            <path d="M 4,50 A 46,46 0 0,0 96,50 Z" fill="#FFFFFF" />
+            <rect x="4" y="46" width="92" height="8" fill="#222224" />
+            <circle cx="50" cy="50" r="14" fill="#222224" />
+            <circle cx="50" cy="50" r="10" fill="#FFFFFF" />
+            <circle cx="50" cy="50" r="6" fill="#F0F0F0" stroke="#222224" stroke-width="1.5" />
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#222224" stroke-width="4" />
+        </svg>
     </div>
     <div class="pokeball-item">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Great_Ball_icon.svg/512px-Great_Ball_icon.svg.png" alt="수퍼볼">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#0075BE" />
+            <path d="M 18,22 L 32,32 L 20,46 A 46,46 0 0,1 8,36 Z" fill="#EE1515" />
+            <path d="M 82,22 L 68,32 L 80,46 A 46,46 0 0,0 92,36 Z" fill="#EE1515" />
+            <path d="M 4,50 A 46,46 0 0,0 96,50 Z" fill="#FFFFFF" />
+            <rect x="4" y="46" width="92" height="8" fill="#222224" />
+            <circle cx="50" cy="50" r="14" fill="#222224" />
+            <circle cx="50" cy="50" r="10" fill="#FFFFFF" />
+            <circle cx="50" cy="50" r="6" fill="#F0F0F0" stroke="#222224" stroke-width="1.5" />
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#222224" stroke-width="4" />
+        </svg>
     </div>
     <div class="pokeball-item">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Ultra_Ball_icon.svg/512px-Ultra_Ball_icon.svg.png" alt="하이퍼볼">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#222224" />
+            <path d="M 20,12 L 34,12 L 40,46 L 28,46 Z" fill="#FCAE1E" />
+            <path d="M 80,12 L 66,12 L 60,46 L 72,46 Z" fill="#FCAE1E" />
+            <path d="M 4,50 A 46,46 0 0,0 96,50 Z" fill="#FFFFFF" />
+            <rect x="4" y="46" width="92" height="8" fill="#222224" />
+            <circle cx="50" cy="50" r="14" fill="#222224" />
+            <circle cx="50" cy="50" r="10" fill="#FFFFFF" />
+            <circle cx="50" cy="50" r="6" fill="#F0F0F0" stroke="#222224" stroke-width="1.5" />
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#222224" stroke-width="4" />
+        </svg>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -404,7 +430,7 @@ st.markdown("""
 
 if st.session_state.selected_mbti is None:
     # -------------------------------------------------------------------------
-    # [화면 1] MBTI 선택 화면 (정사각형 4x4 그리드, 순수 MBTI 유형만 표시)
+    # [화면 1] MBTI 선택 화면 (정사각형 4x4 그리드)
     # -------------------------------------------------------------------------
     st.markdown('<div class="mbti-section-title">👉 당신의 MBTI 유형을 클릭해 주세요!</div>', unsafe_allow_html=True)
 
@@ -425,58 +451,17 @@ if st.session_state.selected_mbti is None:
 
 else:
     # -------------------------------------------------------------------------
-    # [화면 2] 포켓몬 결과 화면
+    # [화면 2] 단짝 포켓몬 결과 화면
     # -------------------------------------------------------------------------
     current_mbti = st.session_state.selected_mbti
     poke_info = MBTI_POKEMON[current_mbti]
     poke_id = poke_info["id"]
     
-    # 올바른 공식 고화질 대표 이미지 URL (경로 오류 수정)
+    # 정확한 고화질 포켓몬 아트워크 경로 (경로 오타 수정 완료)
     img_url = f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{poke_id}.png"
 
-    # 폭죽 및 파티클 연출
+    # 축하 애니메이션 연출 (Deprecation 경고 없이 안전하게 재생)
     st.balloons()
-    
-    js_confetti = """
-    <script>
-    function createParticle(x, y) {
-        const particle = document.createElement('div');
-        const colors = ['#F59E0B', '#EF4444', '#10B981', '#3B82F6', '#EC4899', '#FBBF24'];
-        const size = Math.random() * 12 + 8;
-        particle.style.position = 'fixed';
-        particle.style.left = x + 'px';
-        particle.style.top = y + 'px';
-        particle.style.width = size + 'px';
-        particle.style.height = size + 'px';
-        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
-        particle.style.pointerEvents = 'none';
-        particle.style.zIndex = '999999';
-        
-        document.body.appendChild(particle);
-
-        const destX = (Math.random() - 0.5) * 350;
-        const destY = (Math.random() - 0.5) * 350 - 100;
-
-        particle.animate([
-            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-            { transform: `translate(${destX}px, ${destY}px) scale(0)`, opacity: 0 }
-        ], {
-            duration: 1200 + Math.random() * 800,
-            easing: 'cubic-bezier(0, .9, .57, 1)',
-            fill: 'forwards'
-        });
-
-        setTimeout(() => particle.remove(), 2000);
-    }
-    for(let i=0; i<40; i++) {
-        setTimeout(() => {
-            createParticle(window.innerWidth / 2, window.innerHeight / 3);
-        }, i * 25);
-    }
-    </script>
-    """
-    components.html(js_confetti, height=0)
 
     # 어울리는 이유 리스트 HTML
     reasons_html = "".join([f"<li>{r}</li>" for r in poke_info["reasons"]])
@@ -505,7 +490,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
 
-    # 둥근 형태의 '돌아가기' 버튼
+    # 둥근 알약 형태의 '돌아가기' 버튼
     st.markdown('<div class="back-button-container">', unsafe_allow_html=True)
     if st.button("돌아가기"):
         st.session_state.selected_mbti = None
